@@ -13,7 +13,7 @@ class MyApp(QMainWindow):
         
     def call_api_encrypt(self):
         url = "http://127.0.0.1:5000/api/caesar/encrypt"
-        payload={
+        payload = {
             "plain_text": self.ui.txt_plain_text.toPlainText(),
             "key": self.ui.txt_key_text.toPlainText()
         }
@@ -21,42 +21,40 @@ class MyApp(QMainWindow):
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                self.ui.txt_cipher_text.setPlainText(data["encrypted_message"])
+                self.ui.txt_cipher_text.setPlainText(data.get("encrypted_message", ""))
                 
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
-                msg.setText("Encrypted Successfully")
+                msg.setText("Mã hóa thành công")
                 msg.exec_()
             else:
-                print("Error while calling API")
-                exit()
+                print(f"Lỗi khi gọi API: {response.status_code} - {response.text}")
         except requests.exceptions.RequestException as e:
-            print("Error: %s" % e.message)
+            print(f"Lỗi: {str(e)}")
             
     def call_api_decrypt(self):
         url = "http://127.0.0.1:5000/api/caesar/decrypt"
-        payload={
-            "plain_text": self.ui.txt_plain_text.toPlainText(),
+        payload = {
+            "cipher_text": self.ui.txt_cipher_text.toPlainText(),
             "key": self.ui.txt_key_text.toPlainText()
         }
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                self.ui.txt_cipher_text.setPlainText(data["encrypted_message"])
+                self.ui.txt_plain_text.setPlainText(data.get("decrypted_message", ""))
                 
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
-                msg.setText("Decrypted Successfully")
+                msg.setText("Giải mã thành công")
                 msg.exec_()
             else:
-                print("Error while calling API")
-                exit()
+                print(f"Lỗi khi gọi API: {response.status_code} - {response.text}")
         except requests.exceptions.RequestException as e:
-            print("Error: %s" % e.message)
+            print(f"Lỗi: {str(e)}")
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyApp()
     window.show()
